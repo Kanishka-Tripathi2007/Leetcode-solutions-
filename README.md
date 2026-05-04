@@ -1,26 +1,2 @@
-# Leetcode-solutions-
-class Solution {
-public:
-    int countPalindromicSubsequence(string s) {
-        int n = s.size();
-        int count = 0;
-
-        for(char ch = 'a'; ch <= 'z'; ch++) {
-
-            int first = s.find(ch);
-            int last = s.rfind(ch);
-
-            if(first == -1 || first == last)
-                continue;
-
-            unordered_set<char> middle;
-
-            for(int i = first + 1; i < last; i++)
-                middle.insert(s[i]);
-
-            count += middle.size();
-        }
-
-        return count;  
-    }
-};
+This repository contains my solutions to various LeetCode problems that I solve regularly to improve my Data Structures and Algorithms (DSA) skills and strengthen logical thinking and problem-solving abilities. The solutions are organized topic-wise such as arrays, strings, linked lists, trees, dynamic programming, and other important concepts commonly asked in coding interviews. Each solution includes optimized code along with clear approaches and time–space complexity analysis whenever possible. The main goal of this repository is to track my learning progress, maintain consistency in coding practice, and build a strong foundation for technical interviews and competitive programming. This repository reflects my continuous learning journey and commitment to becoming a better programmer through daily practice and exploration of efficient algorithms.
+Author - Kanishka Tripathi
