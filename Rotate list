@@ -1,0 +1,40 @@
+class Solution {
+public:
+    ListNode* rotateRight(ListNode* head, int k) {
+        
+        // Edge cases
+        if (head == NULL || head->next == NULL || k == 0)
+            return head;
+
+        // Step 1: Find length and last node
+        int length = 1;
+        ListNode* tail = head;
+
+        while (tail->next != NULL) {
+            tail = tail->next;
+            length++;
+        }
+
+        // Step 2: Make circular list
+        tail->next = head;
+
+        // Step 3: Effective rotation
+        k = k % length;
+
+        // Step 4: Find new tail
+        int steps = length - k - 1;
+        ListNode* newTail = head;
+
+        for (int i = 0; i < steps; i++) {
+            newTail = newTail->next;
+        }
+
+        // Step 5: Set new head
+        ListNode* newHead = newTail->next;
+
+        // Break circular link
+        newTail->next = NULL;
+
+        return newHead;
+    }
+};
