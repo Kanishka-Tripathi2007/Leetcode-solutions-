@@ -1,0 +1,44 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+class Solution {
+public:
+    int countCoveredBuildings(int n, vector<vector<int>>& buildings) {
+
+        unordered_map<int, vector<int>> rows, cols;
+
+        // group buildings by row and column
+        for (auto &b : buildings) {
+            rows[b[0]].push_back(b[1]); // x -> all y
+            cols[b[1]].push_back(b[0]); // y -> all x
+        }
+
+        // sort coordinates
+        for (auto &r : rows) sort(r.second.begin(), r.second.end());
+        for (auto &c : cols) sort(c.second.begin(), c.second.end());
+
+        int covered = 0;
+
+        for (auto &b : buildings) {
+            int x = b[0], y = b[1];
+
+            auto &row = rows[x];
+            auto &col = cols[y];
+
+            // check left & right
+            auto itRow = lower_bound(row.begin(), row.end(), y);
+            bool left  = (itRow != row.begin());
+            bool right = (next(itRow) != row.end());
+
+            // check up & down
+            auto itCol = lower_bound(col.begin(), col.end(), x);
+            bool up    = (itCol != col.begin());
+            bool down  = (next(itCol) != col.end());
+
+            if (left && right && up && down)
+                covered++;
+        }
+
+        return covered;
+    }
+};
