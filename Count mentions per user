@@ -1,0 +1,75 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <sstream>
+#include <algorithm>
+using namespace std;
+
+class Solution {
+public:
+
+    // Custom sorting rule
+    static bool cmp(const vector<string>& a, const vector<string>& b) {
+        int t1 = stoi(a[1]);
+        int t2 = stoi(b[1]);
+
+        if (t1 != t2) return t1 < t2;
+
+        // OFFLINE should come before MESSAGE
+        return a[0] == "OFFLINE" && b[0] == "MESSAGE";
+    }
+
+    vector<int> countMentions(int numberOfUsers,
+                              vector<vector<string>>& events) {
+
+        sort(events.begin(), events.end(), cmp);
+
+        vector<int> mentions(numberOfUsers, 0);
+        vector<int> offlineUntil(numberOfUsers, -1);
+
+        for (auto &event : events) {
+
+            string type = event[0];
+            int time = stoi(event[1]);
+
+            // ---------- OFFLINE ----------
+            if (type == "OFFLINE") {
+                int id = stoi(event[2]);
+                offlineUntil[id] = time + 60;
+            }
+
+            // ---------- MESSAGE ----------
+            else {
+
+                string msg = event[2];
+
+                // ALL → everyone counted
+                if (msg == "ALL") {
+                    for (int i = 0; i < numberOfUsers; i++)
+                        mentions[i]++;
+                }
+
+                // HERE → only online users
+                else if (msg == "HERE") {
+                    for (int i = 0; i < numberOfUsers; i++) {
+                        if (offlineUntil[i] <= time)
+                            mentions[i]++;
+                    }
+                }
+
+                // id<number> mentions
+                else {
+                    stringstream ss(msg);
+                    string token;
+
+                    while (ss >> token) {
+                        int id = stoi(token.substr(2));
+                        mentions[id]++;
+                    }
+                }
+            }
+        }
+
+        return mentions;
+    }
+};
