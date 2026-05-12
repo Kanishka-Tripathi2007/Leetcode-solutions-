@@ -1,0 +1,32 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+class Solution {
+public:
+    int minimumEffort(vector<vector<int>>& tasks) {
+        
+        // Sort by (minimum - actual) descending
+        sort(tasks.begin(), tasks.end(), [](auto &a, auto &b){
+            return (a[1] - a[0]) > (b[1] - b[0]);
+        });
+
+        int energy = 0;   // current energy
+        int answer = 0;   // minimum initial energy
+
+        for (auto &task : tasks) {
+            int actual = task[0];
+            int minimum = task[1];
+
+            // If energy is less than required minimum
+            if (energy < minimum) {
+                answer += (minimum - energy);
+                energy = minimum;
+            }
+
+            // complete task
+            energy -= actual;
+        }
+
+        return answer;
+    }
+};
