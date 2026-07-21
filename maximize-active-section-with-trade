@@ -1,0 +1,46 @@
+class Solution {
+public:
+    int maxActiveSectionsAfterTrade(string s) {
+        int n = s.size();
+
+        // Count original number of active sections
+        int ones = 0;
+        for (char c : s) {
+            if (c == '1') {
+                ones++;
+            }
+        }
+
+        // Augment the string
+        string t = "1" + s + "1";
+
+        int ans = ones;
+
+        // Run-length encode the augmented string
+        vector<pair<char, int>> runs;
+
+        for (char c : t) {
+            if (runs.empty() || runs.back().first != c) {
+                runs.push_back({c, 1});
+            } else {
+                runs.back().second++;
+            }
+        }
+
+        // Find a 1-run surrounded by two 0-runs
+        for (int i = 1; i + 1 < runs.size(); i++) {
+            if (runs[i].first == '1' &&
+                runs[i - 1].first == '0' &&
+                runs[i + 1].first == '0') {
+
+                int leftZero = runs[i - 1].second;
+                int rightZero = runs[i + 1].second;
+
+                // Net gain = left zero block + right zero block
+                ans = max(ans, ones + leftZero + rightZero);
+            }
+        }
+
+        return ans;
+    }
+};
