@@ -1,0 +1,48 @@
+class Solution {
+public:
+    int uniqueXorTriplets(vector<int>& nums) {
+        vector<bool> present(2048, false);
+
+        // Mark distinct values in nums
+        for (int x : nums) {
+            present[x] = true;
+        }
+
+        vector<int> values;
+        for (int x = 0; x < 2048; x++) {
+            if (present[x]) {
+                values.push_back(x);
+            }
+        }
+
+        // Store all possible XOR of two values
+        vector<bool> twoXor(2048, false);
+
+        for (int a : values) {
+            for (int b : values) {
+                twoXor[a ^ b] = true;
+            }
+        }
+
+        // Combine XOR of two values with a third value
+        vector<bool> threeXor(2048, false);
+
+        for (int x = 0; x < 2048; x++) {
+            if (twoXor[x]) {
+                for (int y : values) {
+                    threeXor[x ^ y] = true;
+                }
+            }
+        }
+
+        // Count unique results
+        int ans = 0;
+        for (int x = 0; x < 2048; x++) {
+            if (threeXor[x]) {
+                ans++;
+            }
+        }
+
+        return ans;
+    }
+};
