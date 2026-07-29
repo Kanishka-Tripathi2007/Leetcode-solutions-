@@ -1,0 +1,144 @@
+class Solution {
+public:
+    long long countWays(vector<int>& cnt, int total, int k) {
+        // Count distinct permutations:
+        // total! / (cnt[0]! * cnt[1]! * ...)
+        //
+        // We only care whether the result reaches k.
+        long long ways = 1;
+
+        for (int i = 0; i < 26; i++) {
+            for (int j = 1; j <= cnt[i]; j++) {
+                ways = ways * (total - cnt[i] + j) / j;
+
+                if (ways >= k)
+                    return k;
+            }
+        }
+
+        return ways;
+    }
+
+    string kthPalindrome(string s, int k) {
+        vector<int> freq(26, 0);
+
+        for (char c : s) {
+            freq[c - 'a']++;
+        }
+
+        // A palindrome can have at most one character
+        // with an odd frequency.
+        char middle = 0;
+
+        for (int i = 0; i < 26; i++) {
+            if (freq[i] % 2 == 1) {
+                middle = char('a' + i);
+            }
+        }
+
+        // Build frequency of the first half.
+        vector<int> halfFreq(26);
+
+        int halfLength = s.length() / 2;
+
+        for (int i = 0; i < 26; i++) {
+            halfFreq[i] = freq[i] / 2;
+        }
+
+        // Check if total number of distinct palindromes < k.
+        long long totalWays = 1;
+        int remaining = halfLength;
+
+        // Calculate multinomial coefficient:
+        // halfLength! / product(halfFreq[i]!)
+        //
+        // Build it using combinations to avoid large factorials.
+        for (int i = 0; i < 26; i++) {
+            int take = halfFreq[i];
+
+            if (take == 0)
+                continue;
+
+            // Choose 'take' positions for this character
+            // from the remaining positions.
+            for (int j = 1; j <= take; j++) {
+                totalWays = totalWays * (remaining - take + j) / j;
+
+                if (totalWays >= k) {
+                    totalWays = k;
+                    break;
+                }
+            }
+
+            remaining -= take;
+
+            if (totalWays >= k)
+                break;
+        }
+
+        if (totalWays < k)
+            return "";
+
+        string left;
+
+        // Construct the k-th lexicographically smallest first half.
+        for (int pos = 0; pos < halfLength; pos++) {
+
+            for (int c = 0; c < 26; c++) {
+
+                if (halfFreq[c] == 0)
+                    continue;
+
+                // Temporarily put character c here.
+                halfFreq[c]--;
+
+                int remainingLength = halfLength - pos - 1;
+
+                // Number of permutations after choosing c.
+                long long ways = 1;
+                int rem = remainingLength;
+
+                for (int x = 0; x < 26; x++) {
+                    int take = halfFreq[x];
+
+                    if (take == 0)
+                        continue;
+
+                    for (int j = 1; j <= take; j++) {
+                        ways = ways * (rem - take + j) / j;
+
+                        if (ways >= k) {
+                            ways = k;
+                            break;
+                        }
+                    }
+
+                    rem -= take;
+
+                    if (ways >= k)
+                        break;
+                }
+
+                if (ways >= k) {
+                    // The k-th permutation is in this group.
+                    left += char('a' + c);
+                    break;
+                } else {
+                    // Skip all permutations beginning with c.
+                    k -= ways;
+                    halfFreq[c]++;
+                }
+            }
+        }
+
+        // Create the palindrome.
+        string right = left;
+        reverse(right.begin(), right.end());
+
+        if (middle != 0) {
+            return left + middle + right;
+        }
+
+        return left + right;
+    }
+};
