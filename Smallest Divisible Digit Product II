@@ -1,0 +1,38 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+class Solution {
+public:
+    // Function to check if a number string is zero-free
+    bool isZeroFree(const string &s) {
+        return s.find('0') == string::npos;
+    }
+
+    // Function to compute product of digits
+    long long digitProduct(const string &s) {
+        long long product = 1;
+        for (char c : s) {
+            product *= (c - '0');
+        }
+        return product;
+    }
+
+    string smallestNumber(string num, long long t) {
+        long long start = stoll(num);
+
+        for (long long candidate = start; candidate <= LLONG_MAX; candidate++) {
+            string s = to_string(candidate);
+
+            if (!isZeroFree(s)) continue;
+
+            long long product = digitProduct(s);
+            if (product % t == 0) {
+                return s;
+            }
+
+            // safeguard to avoid infinite loop in practice
+            if (candidate > 1e7) break;
+        }
+        return "-1";
+    }
+};
