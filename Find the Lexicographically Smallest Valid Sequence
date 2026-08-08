@@ -1,0 +1,90 @@
+class Solution {
+public:
+    vector<int> validSequence(string word1, string word2) {
+        int n = word1.size();
+        int m = word2.size();
+
+        // suf[j] = earliest position in word1 from which
+        // word2[j..m-1] can be matched exactly.
+        vector<int> suf(m + 1, n);
+
+        int p = n - 1;
+
+        for (int j = m - 1; j >= 0; j--) {
+            while (p >= 0 && word1[p] != word2[j])
+                p--;
+
+            if (p < 0)
+                break;
+
+            suf[j] = p;
+            p--;
+        }
+
+        vector<int> ans;
+        int prev = -1;
+        bool usedMismatch = false;
+
+        for (int j = 0; j < m; j++) {
+            bool found = false;
+
+            /*
+                Try every possible index, starting from the smallest.
+                We need an O(n+m) solution, so we don't actually scan
+                repeatedly. Instead, candidates are considered through
+                the two cases below.
+            */
+
+            // Candidate 1: exact match
+            int i = prev + 1;
+
+            while (i < n && word1[i] != word2[j])
+                i++;
+
+            if (i < n) {
+                // If the remaining suffix can be matched exactly.
+                if (j + 1 == m || suf[j + 1] > i) {
+                    ans.push_back(i);
+                    prev = i;
+                    found = true;
+                    continue;
+                }
+
+                // We may use the one allowed mismatch later.
+                if (!usedMismatch) {
+                    // If there is enough room for the remaining chars
+                    // after using this exact match.
+                    if (j + 1 == m || suf[j + 1] > i) {
+                        ans.push_back(i);
+                        prev = i;
+                        found = true;
+                        continue;
+                    }
+                }
+            }
+
+            // Candidate 2: use mismatch here.
+            if (!usedMismatch) {
+                int x = prev + 1;
+
+                /*
+                    We can change word1[x] into word2[j].
+                    For the rest, everything must match exactly.
+                */
+                if (x < n) {
+                    if (j + 1 == m || suf[j + 1] > x) {
+                        ans.push_back(x);
+                        prev = x;
+                        usedMismatch = true;
+                        found = true;
+                    }
+                }
+            }
+
+            if (!found)
+                return {};
+        }
+
+        return ans;
+    }
+};
