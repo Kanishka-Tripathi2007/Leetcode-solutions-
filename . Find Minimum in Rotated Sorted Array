@@ -1,3 +1,5 @@
+Implement function to find minimum in rotated array
+
 class Solution {
 public:
     int findMin(vector<int>& nums) {
